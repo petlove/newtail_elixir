@@ -12,14 +12,7 @@ defmodule NewtailElixir.MixProject do
       name: "NewtailElixir",
       description: "A library for integrating with Newtail",
       source_url: "https://github.com/petlove/newtail_elixir",
-      elixirc_paths: elixirc_paths(Mix.env()),
-      test_coverage: [tool: ExCoveralls],
-      preferred_cli_env: [
-        coveralls: :test,
-        "coveralls.detail": :test,
-        "coveralls.post": :test,
-        "coveralls.html": :test
-      ]
+      elixirc_paths: elixirc_paths(Mix.env())
     ]
   end
 
@@ -33,7 +26,6 @@ defmodule NewtailElixir.MixProject do
   defp deps do
     [
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
-      {:excoveralls, "~> 0.18", only: :test},
       {:httpoison, "~> 2.0"}
     ]
   end

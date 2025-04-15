@@ -2,6 +2,7 @@ defmodule NewtailElixir.Clients.NewtailBehaviour do
   @moduledoc "Newtail client behaviour."
 
   @typep body :: nonempty_list()
+  @typep type :: :products | :inventories
 
-  @callback sync_products(body) :: {:ok, binary()} | {:error, binary()}
+  @callback sync(body, type) :: {:ok, binary()} | {:error, binary()}
 end
