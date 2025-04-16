@@ -36,5 +36,5 @@ defmodule NewtailElixir.HttpClient do
 
   defp base_url, do: Application.fetch_env!(:newtail_elixir, :base_url)
 
-  defp http_client, do: Application.fetch_env!(:newtail_elixir, :http_client)
+  defp http_client, do: Application.get_env(:newtail_elixir, :http_client, HTTPoison)
 end
