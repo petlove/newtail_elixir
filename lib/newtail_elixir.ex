@@ -3,7 +3,10 @@ defmodule NewtailElixir do
   Implements the interface of the lib.
   """
 
-  alias NewtailElixir.Clients.Newtail
+  @type type :: :products | :inventories
+
+  alias NewtailElixir.HttpClient
+  alias NewtailElixir.Resources.{Inventory, Product}
 
   @doc """
   Syncs products or inventories with Newtail.
@@ -12,17 +15,42 @@ defmodule NewtailElixir do
   success or failure body/response to act on.
 
   ## Parameters
-    - `params`: A list of products to sync.
-    - `type`: The type of sync to perform. Can be `:products` or `:inventories`.
+    - `params`: A list of products or inventories to sync.
+    - `opts`: Options for the request. Values for `app_id` and `api_key` are expected.
 
   ## Returns
     - `{:ok, _string_message}` on success.
-    - `{:error, _string_message}` on failure because properties are missing.
-    - `{:error, _map}` when request fails. Map contains metadata, endpoint and reason for
-    debugging/reporting purposes.
+    - `{:error, _string_message}` when the changeset validation fails. The error message contains the invalid params.
+    - `{:error, _map}` when request fails. Map url and reason for debugging/reporting purposes.
     - `{:unexpected_response, _map}` when the response is not 202 or 422. Map contains response
     body and status code.
   """
-  @spec sync(list(), atom()) :: {:ok, binary()} | {:error, binary() | {:error, map()}}
-  defdelegate sync(params, type), to: Newtail
+  @spec sync(list(), type, keyword()) :: {:ok, binary()} | {:error, binary() | {:error, map()}}
+  def sync(params, type, opts \\ []) do
+    changesets = validate_changesets(params, type)
+
+    case Enum.all?(changesets, & &1.valid?) do
+      true ->
+        params |> Jason.encode!() |> HttpClient.post(type, opts)
+
+      false ->
+        invalid_params = format_invalid_changesets(changesets)
+
+        {:error, "The following params are invalid: #{inspect(invalid_params)}"}
+    end
+  end
+
+  defp validate_changesets(params, :products),
+    do: Enum.map(params, &Product.changeset(%Product{}, &1))
+
+  defp validate_changesets(params, :inventories),
+    do: Enum.map(params, &Inventory.changeset(%Inventory{}, &1))
+
+  defp format_invalid_changesets(changesets) do
+    changesets
+    |> Enum.filter(&(!&1.valid?))
+    |> Enum.map(fn changeset ->
+      Enum.map(changeset.errors, fn {key, {message, _}} -> "#{key}: #{message}" end)
+    end)
+  end
 end
