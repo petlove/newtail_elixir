@@ -23,8 +23,6 @@ end
 
 Run `mix deps.get` in your terminal to fetch the dependency.
 
----
-
 ### 2. **Configure the Base URL**
 Set the `base_url` configuration in your application. This is required for the library to communicate with the Newtail Retail Media APIs. The example uses an environment variable for flexibility:
 
@@ -34,8 +32,6 @@ config :newtail_elixir,
 ```
 
 Make sure the `NEWTAIL_BASE_URL` environment variable is set in your environment (e.g., in a `.env` file or your deployment configuration).
-
----
 
 ## Usage
 
