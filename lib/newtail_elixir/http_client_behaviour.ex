@@ -2,7 +2,7 @@ defmodule NewtailElixir.HttpClientBehaviour do
   @moduledoc "Http client behaviour."
 
   @typep body :: nonempty_list()
-  @typep type :: :products | :inventories
+  @typep type :: :products | :inventories | :ads
   @typep opts :: keyword()
 
   @callback post(body, type, opts) ::
