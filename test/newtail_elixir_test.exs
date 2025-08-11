@@ -165,4 +165,88 @@ defmodule NewtailElixirTest do
                NewtailElixir.sync(valid_params, :inventories, valid_opts)
     end
   end
+
+  describe "query_ads/2" do
+    setup do
+      valid_opts = [
+        app_id: "test_app_id",
+        api_key: "test_api_key",
+        publisher_id: "12345"
+      ]
+
+      valid_params = %{
+        context: "search",
+        term: "ração true",
+        user_id: "6a746448-cf59-42bc-aa3d-a426844ad115",
+        session_id: "f361661f-5986-4779-9009-a34562f18347",
+        channel: "msite",
+        placements: %{
+          search: %{quantity: 2, types: ["product"]}
+        }
+      }
+
+      %{valid_opts: valid_opts, valid_params: valid_params}
+    end
+
+    test "returns {:ok, body} on successful request", %{
+      valid_opts: valid_opts,
+      valid_params: valid_params
+    } do
+      response_body = %{
+        "query_at" => "2025-08-11T15:43:11.306008328+00:00",
+        "query_id" => "f129c962-ad50-4ac1-8af4-2e8c82aa55f1",
+        "request_id" => "9c6ff349-0a08-4a72-98e7-e1c93612976c",
+        "search" => [
+          %{
+            "ad_id" => "2f76052b-1b05-4b87-a5d6-776d61f479fb",
+            "campaign_name" => "Teste true",
+            "click_url" => "click URL",
+            "destination_url" =>
+              "https://www.petlove.com.br/racao-seca-true-para-caes-adultos-racas-pequenas/p?sku=2638253",
+            "impression_url" => "impression URL",
+            "position" => 1,
+            "product_metadata" => nil,
+            "product_name" => "Ração Seca True para Cães Adultos Raças Pequenas",
+            "product_sku" => "2638253",
+            "seller_id" => nil,
+            "type" => "product",
+            "view_url" => "view URL"
+          }
+        ]
+      }
+
+      expect(HttpClientMock, :post, fn "https://api.newtail.com/v1/rma/12345", _body, _headers ->
+        {:ok, %HTTPoison.Response{status_code: 200, body: Jason.encode!(response_body)}}
+      end)
+
+      assert {:ok, response_body} ==
+               NewtailElixir.query_ads(valid_params, valid_opts)
+    end
+
+    test "returns {:error, message} on changeset validation errors", %{
+      valid_opts: valid_opts,
+      valid_params: valid_params
+    } do
+      invalid_params = Map.put(valid_params, :placements, %{search: %{quantity: 0}})
+
+      assert {:error, "The following params are invalid: [[\"placements: invalid placements\"]]"} ==
+               NewtailElixir.query_ads(invalid_params, valid_opts)
+    end
+
+    test "returns {:error, map} when request fails", %{
+      valid_opts: valid_opts,
+      valid_params: valid_params
+    } do
+      expect(HttpClientMock, :post, fn "https://api.newtail.com/v1/rma/12345", _body, _headers ->
+        {:error, %HTTPoison.Error{reason: "Network error"}}
+      end)
+
+      assert {:error,
+              %{
+                reason: "Network error",
+                fingerprint: "https://api.newtail.com/v1/rma/12345",
+                metadata: %{url: "https://api.newtail.com/v1/rma/12345"}
+              }} == NewtailElixir.query_ads(valid_params, valid_opts)
+    end
+  end
 end
