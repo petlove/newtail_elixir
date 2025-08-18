@@ -27,7 +27,7 @@ defmodule NewtailElixir.HttpClient do
   end
 
   defp handle_response({:ok, %HTTPoison.Response{status_code: status_code, body: body}}, _url) do
-    {:unexpected_response, %{status_code: status_code, body: Jason.decode!(body)}}
+    {:unexpected_response, %{status_code: status_code, body: body}}
   end
 
   defp handle_response({:error, %HTTPoison.Error{reason: reason}}, url) do

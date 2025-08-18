@@ -81,7 +81,7 @@ defmodule NewtailElixirTest do
       expect(HttpClientMock, :post, fn "https://api.newtail.com/product/bulk/products",
                                        _body,
                                        _headers ->
-        {:ok, %HTTPoison.Response{status_code: 301, body: Jason.encode!("Moved Permanently")}}
+        {:ok, %HTTPoison.Response{status_code: 301, body: "Moved Permanently"}}
       end)
 
       assert {:unexpected_response, %{status_code: 301, body: "Moved Permanently"}} ==
@@ -158,7 +158,7 @@ defmodule NewtailElixirTest do
       expect(HttpClientMock, :post, fn "https://api.newtail.com/product/bulk/inventories",
                                        _body,
                                        _headers ->
-        {:ok, %HTTPoison.Response{status_code: 301, body: Jason.encode!("Moved Permanently")}}
+        {:ok, %HTTPoison.Response{status_code: 301, body: "Moved Permanently"}}
       end)
 
       assert {:unexpected_response, %{status_code: 301, body: "Moved Permanently"}} ==
