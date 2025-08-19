@@ -129,7 +129,7 @@ defmodule NewtailElixirTest do
         {:ok, %HTTPoison.Response{status_code: 202}}
       end)
 
-      assert {:ok, "Products have been enqueued for sync"} ==
+      assert {:ok, "Inventories have been enqueued for sync"} ==
                NewtailElixir.sync(valid_params, :inventories, valid_opts)
     end
 

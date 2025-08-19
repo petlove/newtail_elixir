@@ -22,8 +22,21 @@ defmodule NewtailElixir.HttpClient do
     }
   end
 
-  defp handle_response({:ok, %HTTPoison.Response{status_code: 202}}, _url) do
-    {:ok, "Products have been enqueued for sync"}
+  defp handle_response(
+         {:ok, %HTTPoison.Response{status_code: status_code, body: body}},
+         url
+       )
+       when status_code in 200..202 do
+    cond do
+      String.ends_with?(url, "/product/bulk/products") ->
+        {:ok, "Products have been enqueued for sync"}
+
+      String.ends_with?(url, "/product/bulk/inventories") ->
+        {:ok, "Inventories have been enqueued for sync"}
+
+      true ->
+        {:ok, body}
+    end
   end
 
   defp handle_response({:ok, %HTTPoison.Response{status_code: status_code, body: body}}, _url) do
