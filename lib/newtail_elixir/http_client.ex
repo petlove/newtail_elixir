@@ -36,12 +36,8 @@ defmodule NewtailElixir.HttpClient do
         {:ok, "Inventories have been enqueued for sync"}
 
       true ->
-        {:ok, body}
+        {:ok, Jason.decode!(body)}
     end
-  end
-
-  defp handle_response({:ok, %HTTPoison.Response{status_code: 200, body: body}}, _url) do
-    {:ok, Jason.decode!(body)}
   end
 
   defp handle_response({:ok, %HTTPoison.Response{status_code: status_code, body: body}}, _url) do
