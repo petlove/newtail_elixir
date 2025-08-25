@@ -6,7 +6,7 @@ defmodule NewtailElixir do
   @type type :: :products | :inventories
 
   alias NewtailElixir.HttpClient
-  alias NewtailElixir.Resources.{Inventory, Product}
+  alias NewtailElixir.Resources.{AdsRequest, Inventory, Product}
 
   @doc """
   Syncs products or inventories with Newtail.
@@ -52,5 +52,33 @@ defmodule NewtailElixir do
     |> Enum.map(fn changeset ->
       Enum.map(changeset.errors, fn {key, {message, _}} -> "#{key}: #{message}" end)
     end)
+  end
+
+  @doc """
+  Requests ads to fill the ad spaces (`placements`).
+
+  ## Parameters
+    - `params`: A map of parameters. Check the VTEX Ads API docs for the required values.
+    - `opts`: Options for the request. Values for `app_id`, `api_key` and `publisher_id` are expected.
+
+  ## Returns
+    - `{:ok, string_message}` on success.
+    - `{:error, string_message}` when the changeset validation fails. The error message contains the invalid params.
+    - `{:error, map}` when request fails. Map url and reason for debugging/reporting purposes.
+    - `{:unexpected_response, map}` when the response is not 200 or 422. Map contains response body and status code.
+  """
+  @spec sync(map(), type, keyword()) :: {:ok, binary()} | {:error, binary() | {:error, map()}}
+  def query_ads(params, opts \\ []) do
+    changeset = AdsRequest.changeset(%AdsRequest{}, params)
+
+    case changeset.valid? do
+      true ->
+        params |> Jason.encode!() |> HttpClient.post(:ads, opts)
+
+      false ->
+        invalid_params = format_invalid_changesets(List.wrap(changeset))
+
+        {:error, "The following params are invalid: #{inspect(invalid_params)}"}
+    end
   end
 end

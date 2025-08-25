@@ -4,14 +4,15 @@ defmodule NewtailElixir.HttpClient do
   @behaviour NewtailElixir.HttpClientBehaviour
 
   def post(body, type, opts) do
-    url = build_url(type)
+    url = build_url(type, opts)
     headers = headers(opts)
 
     http_client().post(url, body, headers) |> handle_response(url)
   end
 
-  defp build_url(:products), do: base_url() <> "/product/bulk/products"
-  defp build_url(:inventories), do: base_url() <> "/product/bulk/inventories"
+  defp build_url(:products, _opts), do: base_url() <> "/product/bulk/products"
+  defp build_url(:inventories, _opts), do: base_url() <> "/product/bulk/inventories"
+  defp build_url(:ads, opts), do: base_url() <> "/v1/rma/#{opts[:publisher_id]}"
 
   defp headers(opts) do
     %{
@@ -35,7 +36,7 @@ defmodule NewtailElixir.HttpClient do
         {:ok, "Inventories have been enqueued for sync"}
 
       true ->
-        {:ok, body}
+        {:ok, Jason.decode!(body)}
     end
   end
 
