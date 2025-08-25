@@ -33,7 +33,7 @@ defmodule NewtailElixir.MixProject do
   defp deps do
     [
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
-      {:ecto_sql, "~> 3.11.0"},
+      {:ecto_sql, "~> 3.11 or ~> 3.12"},
       {:excoveralls, "~> 0.18", only: :test},
       {:httpoison, "~> 2.0"},
       {:mox, "~> 1.0", only: :test}
