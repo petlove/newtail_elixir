@@ -19,7 +19,8 @@ defmodule NewtailElixir.HttpClient do
       "content-Type" => "application/json",
       "accept" => "application/json",
       "x-app-id" => opts[:app_id],
-      "x-api-key" => opts[:api_key]
+      "x-api-key" => opts[:api_key],
+      "user-agent" => opts[:user_agent] || "newtail",
     }
   end
 
