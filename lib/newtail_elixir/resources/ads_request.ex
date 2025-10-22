@@ -13,12 +13,13 @@ defmodule NewtailElixir.Resources.AdsRequest do
     :channel,
     :context,
     :term,
+    :brand_name
     :category_name,
     :placements,
     :tags
   ]
 
-  @required_fields @fields -- [:user_id, :tags, :category_name]
+  @required_fields @fields -- [:term, :brand_name, :user_id, :tags, :category_name]
 
   @derive {Jason.Encoder, only: @fields}
   embedded_schema do
@@ -38,16 +39,26 @@ defmodule NewtailElixir.Resources.AdsRequest do
     product
     |> cast(attrs, @fields)
     |> validate_required(@required_fields)
-    |> maybe_validate_term()
+    |> validate_context_data()
     |> validate_placements()
   end
 
-  defp maybe_validate_term(%{changes: %{context: "search"}} = changeset) do
+  defp validate_context_data(%{changes: %{context: "search"}} = changeset) do
     changeset
     |> validate_required([:term])
   end
 
-  defp maybe_validate_term(changeset), do: changeset
+  defp validate_context_data(%{changes: %{context: "brand_page"}} = changeset) do
+    changeset
+    |> validate_required([:brand_name])
+  end
+
+  defp validate_context_data(%{changes: %{context: "category"}} = changeset) do
+    changeset
+    |> validate_required([:category_name])
+  end
+
+  defp validate_context_data(changeset), do: changeset
 
   defp validate_placements(changeset) do
     case get_change(changeset, :placements) do
