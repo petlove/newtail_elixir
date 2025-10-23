@@ -13,7 +13,7 @@ defmodule NewtailElixir.Resources.AdsRequest do
     :channel,
     :context,
     :term,
-    :brand_name
+    :brand_name,
     :category_name,
     :placements,
     :tags
