@@ -5,7 +5,7 @@ defmodule NewtailElixir.MixProject do
     [
       app: :newtail_elixir,
       version: get_version(),
-      elixir: "~> 1.14.5",
+      elixir: "~> 1.14",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
       package: package(),
