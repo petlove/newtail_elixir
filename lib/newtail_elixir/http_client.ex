@@ -8,7 +8,10 @@ defmodule NewtailElixir.HttpClient do
     headers = headers(opts)
     recv_timeout = Keyword.get(opts, :recv_timeout, 5_000)
 
-    http_client().post(url, body, headers, recv_timeout: recv_timeout)
+    case http_client() do
+      HTTPoison -> HTTPoison.post(url, body, headers, recv_timeout: recv_timeout)
+      client -> client.post(url, body, headers)
+    end
     |> handle_response(url)
   end
 
