@@ -6,8 +6,10 @@ defmodule NewtailElixir.HttpClient do
   def post(body, type, opts) do
     url = build_url(type, opts)
     headers = headers(opts)
+    recv_timeout = Keyword.get(opts, :recv_timeout, 5_000)
 
-    http_client().post(url, body, headers) |> handle_response(url)
+    http_client().post(url, body, headers, recv_timeout: recv_timeout)
+    |> handle_response(url)
   end
 
   defp build_url(:products, _opts), do: base_url() <> "/product/bulk/products"
